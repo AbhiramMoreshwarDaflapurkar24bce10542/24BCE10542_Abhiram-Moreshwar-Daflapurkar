@@ -30,7 +30,7 @@ smarks int1
 );
 
 insert into mech values(101,'Adarsh',91);
-insert into mech values(102,'Ajit',97);x`
+insert into mech values(102,'Ajit',97);
 insert into mech values(103,'Arnav',50);
 insert into mech values(104,'Mina',60);
 insert into mech values(105,'Rina',68);
