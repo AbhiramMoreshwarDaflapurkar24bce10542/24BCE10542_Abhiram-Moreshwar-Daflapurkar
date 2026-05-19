@@ -111,7 +111,7 @@ end
 as status from worker;
 
 
-
+-- VIEWS
 
 create view maxSalaryAdmin as select max(salary) from worker where department='admin';
 
