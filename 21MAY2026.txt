@@ -138,5 +138,5 @@ where salary = (
 
 
 
-select department,max(salary) s
+select department,max(salary) 
 from worker group by department;
