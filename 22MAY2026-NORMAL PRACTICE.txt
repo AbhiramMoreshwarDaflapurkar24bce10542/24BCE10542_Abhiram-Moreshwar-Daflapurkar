@@ -1,0 +1,50 @@
+
+-- joints 
+
+use vitcampus;
+
+create table departments(
+    did int primary key,
+    dname varchar(25) not null unique
+);
+
+insert into departments values
+(101,'CSE'),(102,'ECE'),(103,'civil'),(106,'Aero');
+
+select * from departments order by did;
+
+
+create table HOD
+(Hid int primary key,
+hname varchar(20) not null unique);
+
+insert into HOD values
+(101,'Arun'),(102,'Jayanth'),(104,'Karthik'),(105,'Murali'),(107,'Mech');
+
+select * from hod;
+
+select * from departments CROSS JOIN hod order by did asc;
+
+
+SELECT * FROM departments 
+INNER JOIN hod 
+WHERE departments.did = hod.hid;
+
+
+SELECT * from departments NATURAL JOIN hod;
+
+SELECT * FROM departments LEFT OUTER JOIN 
+hod ON (departments.did = hod.did) order by did asc;
+
+
+
+
+
+
+-- 11. Write an SQL query to print the name of employees having the highest salary in each department.
+
+select first_name, department, salary from worker w1
+where salary = (
+    select MAX(salary) from worker w2
+    where w1.department = w2.department
+);
