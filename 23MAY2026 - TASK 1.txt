@@ -1,0 +1,111 @@
+
+-- 1.[JOINS] List the name of each employee along with their job title and department name.
+
+select e.name, j.job_title, d.dept_name from employees e
+JOIN jobs j ON e.job_id = j.job_id
+JOIN departments d ON e.dept_id = d.dept_id;
+
+-- 2.[SUBQUERY] Find all employees whose salary is higher than the average salary of the 'IT' department.
+
+select * from employees
+where salary > ( select AVG(salary) from employees where dept_id = (
+select dept_id from departments where dept_name = 'IT'));
+
+-- 3.[GROUP BY] Calculate the total salary expenditure for each department name (not ID).
+
+select d.dept_name, SUM(e.salary) from employees e
+JOIN departments d ON e.dept_id = d.dept_id
+group by d.dept_name;
+
+-- 4. [HAVING] Display departments that have more than 2 employees and an average salary above 70,000.
+
+select d.dept_name, COUNT(e.emp_id), AVG(e.salary) from employees e
+JOIN departments d ON e.dept_id = d.dept_id
+group by d.dept_name having COUNT(e.emp_id) > 2
+AND AVG(e.salary) > 70000;
+
+-- 5.[SELF JOIN] Retrieve a list of employee names and their respective manager's names.
+
+select e.name AS employee_name, m.name AS manager_name from employees e
+LEFT JOIN employees m
+ON e.manager_id = m.emp_id;
+
+-- 6.[ORDER BY] Find the top 3 highest-paid employees and list them in descending order.
+
+select * from employees
+order by salary  DESC
+LIMIT 3;
+
+-- 7.[JOINS + WHERE] Find all Developers working in the 'San Francisco' location.
+
+select e.name from employees e
+JOIN jobs j ON e.job_id = j.job_id
+JOIN departments d ON e.dept_id = d.dept_id
+where j.job_title = 'Developer'  AND d.location = 'San Francisco';
+
+-- 8.[GROUP BY] Find the number of employees hired each year.
+
+select YEAR(hire_date), COUNT(emp_id) from employees
+group by YEAR(hire_date);
+
+-- 9.[HAVING] List job titles where the maximum salary of an employee in that role is less than 100,000.
+
+select j.job_title, MAX(e.salary) from employees e
+JOIN jobs j ON e.job_id = j.job_id
+group by j.job_title having MAX(e.salary) < 100000;
+
+-- 10.[SUBQUERY] Find the names of employees who work in the same department as 'David'.
+
+select name from employees
+where dept_id = ( select dept_id from employees where name = 'David' );
+
+-- 11.[MULTI-TABLE JOIN] Show all department names even if they have no employees assigned to them.
+
+select d.dept_name, e.name from departments d
+LEFT JOIN employees e ON d.dept_id = e.dept_id;
+
+-- 12.[COMPLEX FILTER] Find employees who were hired between 2018 and 2020 and earn more than 60,000.
+
+select * from employees
+where hire_date BETWEEN '2018-01-01' AND '2020-12-31' AND salary > 60000;
+
+-- 13.[CORRELATED SUBQUERY] Find employees who earn more than the average salary of their own department.
+
+select e1.name, e1.salary from employees e1
+where salary > ( select AVG(e2.salary) from employees e2 where e1.dept_id = e2.dept_id);
+
+-- 14.[JOINS] Find the job title and salary of the employee with ID 504.
+
+select j.job_title, e.salary from employees e
+JOIN jobs j ON e.job_id = j.job_id where e.emp_id = 504;
+
+-- 15.[GROUP BY] For each manager (by ID), find the minimum salary of the people reporting to them.
+
+select manager_id, MIN(salary) from employees
+where manager_id is not null  group by manager_id;
+
+-- 16.[SUBQUERY] List departments that do not have any 'Analysts'.
+
+select dept_name from departments
+where dept_id NOT IN ( select DISTINCT e.dept_id from employees e
+JOIN jobs j ON e.job_id = j.job_id where j.job_title = 'Analyst' );
+
+-- 17.[AGGREGATION] Find the difference between the highest and lowest salary in the company.
+
+select MAX(salary) - MIN(salary) from employees;
+
+-- 18.[JOIN + ORDER BY] Display employee names and hire dates, sorted by department name (A-Z) and then by salary (High to Low).
+
+select e.name, e.hire_date, d.dept_name, e.salary from employees e
+JOIN departments d ON e.dept_id = d.dept_id order by d.dept_name ASC, e.salary DESC;
+
+-- 19.[HAVING] Identify managers (by ID) who manage more than 2 people.
+
+select manager_id, COUNT(emp_id) from employees
+where manager_id is NOT NUll group by manager_id having COUNT(emp_id) > 2;
+
+-- 20.[SUBQUERY] Find the employee(s) with the third-highest salary.
+
+select * from employees
+where salary = ( select DISTINCT salary from employees order by salary DESC 
+LIMIT 1 OFFSET 2);
