@@ -109,3 +109,43 @@ where manager_id is NOT NUll group by manager_id having COUNT(emp_id) > 2;
 select * from employees
 where salary = ( select DISTINCT salary from employees order by salary DESC 
 LIMIT 1 OFFSET 2);
+
+
+
+
+
+
+-- updated with optional 5 questions (Q21, Q22, Q23, Q24, Q25) : on 24-05-2026 
+
+
+-- 21. [LEFT JOIN] List all job titles and the number of employees currently holding that job. 
+
+select j.job_title, COUNT(e.emp_id) from jobs j
+LEFT JOIN employees e ON j.job_id = e.job_id
+group by j.job_title;
+
+-- 22. [JOIN + LIKE] Find employees in the 'Finance' department whose names contain the letter 'i'.
+
+select e.name from employees e
+JOIN departments d ON e.dept_id = d.dept_id
+where d.dept_name = 'Finance' AND e.name LIKE '%i%'; 
+
+-- 23. [MATH + GROUP BY] Calculate the 10% bonus amount for each employee and show the total bonus per department. 
+
+select d.dept_name, SUM(e.salary * 0.10) AS total_bonus
+from employees e JOIN departments d ON e.dept_id = d.dept_id
+group by d.dept_name;
+
+-- 24. [SUBQUERY] List the name of the department that pays the highest total salary. 
+
+select dept_name from departments where dept_id = (select dept_id from employees
+group by dept_id order by SUM(salary) DESC LIMIT 1);
+
+-- 25. [JOINS] Find all employees who report to 'Charlie'.
+
+select e.name from employees e
+JOIN employees m ON e.manager_id = m.emp_id 	where m.name = 'Charlie';
+
+
+
+
