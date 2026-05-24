@@ -125,3 +125,47 @@ LEFT JOIN employees m ON e.manager_id = m.employee_id;
 
 
 
+
+-- -- updated with optional 5 questions (Q9, Q19, Q20, Q22, Q23) : on 24-05-2026 
+
+
+-- 9.For each Location, find the Department Name with the highest count of employees
+
+select location_id, dept_name, emp_count from (select d.location_id, d.dept_name, COUNT(e.employee_id) AS emp_count,
+RANK() OVER( PARTITION BY d.location_id order by COUNT(e.employee_id) DESC) AS rnk
+from departments d LEFT JOIN employees e
+ON d.dept_id = e.dept_id group by d.location_id, d.dept_name) x where rnk = 1;
+
+
+-- 19.Find the top 3 Departments based on the total hours worked by all their employees across all projects.
+
+select d.dept_name,
+SUM(a.hours_worked) AS total_hours
+from departments d JOIN employees e ON d.dept_id = e.dept_id
+JOIN assignments a ON e.employee_id = a.employee_id
+group by d.dept_name order by total_hours DESC LIMIT 3;
+
+-- 20. Display the Project Name and a status ("High Activity" if total hours > 300, "Normal" otherwise) using the CASE statement.
+
+select p.project_name,
+CASE 
+when SUM(a.hours_worked) > 300
+then 'High Activity'
+else 'Normal'
+END AS status from projects p
+LEFT JOIN assignments a ON p.project_id = a.project_id
+group by p.project_name;
+
+-- 22.Write a query using a Common Table Expression (CTE) to find the Project Name and the number of unique employees assigned to it.
+
+WITH project_cte AS (
+select p.project_name, COUNT(DISTINCT a.employee_id) AS total_employees from projects p
+LEFT JOIN assignments a ON p.project_id = a.project_id group by p.project_name)
+select * from project_cte;
+
+-- 23.Find the Employee Name(s) who are assigned to the same projects as Employee ID 101.
+
+select DISTINCT e.employee_name
+from employees e
+JOIN assignments a ON e.employee_id = a.employee_id
+where a.project_id IN (select project_id from assignments where employee_id = 101) AND e.employee_id != 101;
